@@ -1,5 +1,5 @@
 {
-  "name": "t",
+  "name": "tabbi",
   "version": "1.0",
   "manifest_version": 2,
   "permissions": [
@@ -16,6 +16,6 @@
   ],
   "browser_action":{
     "default_popup":"popup.html",
-    "default_title":"tab extender"
+    "default_title":"tabbi"
   }
 }
