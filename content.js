@@ -6,8 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   chrome.windows.getAll({populate:true},function(windows){
     windows.forEach(function(window){
       window.tabs.forEach(function(tab){
-        var currElement = document.getElementById(tab.id)
-
+          var currElement = document.getElementById(tab.id)
           let currTabId = tab.id
           var ul = document.getElementById("myUL");
           var li = document.createElement("li");
@@ -18,7 +17,18 @@ document.addEventListener('DOMContentLoaded', function() {
             chrome.windows.update(tab.windowId, {focused: true});
             chrome.tabs.update(tab.id, {selected: true});
           })
-          li.appendChild(a);
+          var dragSpan = document.createElement("span");
+          dragSpan.addEventListener("dragstart", function(event){
+            event
+              .dataTransfer
+              .setData('text/plain', event.target.id);
+
+            console.log("dragging");
+          });
+          dragSpan.setAttribute("id", "drag" + tab.id);
+          dragSpan.setAttribute("draggable", "true");
+          dragSpan.appendChild(a)
+          li.appendChild(dragSpan);
           li.setAttribute("id", "li" + currTabId.toString()); // added line
           ul.appendChild(li);
         });
@@ -32,7 +42,37 @@ document.addEventListener('DOMContentLoaded', function() {
         let categoryTitle = JSON.parse(localStorage.getItem(i))["name"];
         let categoryDiv = document.getElementById("categoryList");
         let newDiv = document.createElement("div");
+        newDiv.addEventListener("dragover", function(event){
+          event
+            .dataTransfer
+            .setData('text/plain', event.target.id);
+          //
+          // event
+          //   .currentTarget
+          //   .style
+          //   .backgroundColor = 'yellow';
+          console.log("draggingover");
+          event.preventDefault();
+        })
+        newDiv.addEventListener("drop", function(event){
+          const id = event
+            .dataTransfer
+            .getData('text');
+
+
+          const draggableElement = document.getElementById(id);
+          console.log(draggableElement)
+          const dropzone = event.target;
+          console.log(dropzone)
+
+          dropzone.appendChild(draggableElement);
+
+          event
+            .dataTransfer
+            .clearData();
+        })
         newDiv.textContent = categoryTitle;
+        newDiv.setAttribute("id", "categoryId" + i);
         categoryDiv.appendChild(newDiv);
       }
     }
@@ -52,6 +92,32 @@ document.addEventListener('DOMContentLoaded', function() {
       let categoryTitle = document.getElementById("newCategoryText").value;
       let categoryDiv = document.getElementById("categoryList");
       let newDiv = document.createElement("div");
+      newDiv.addEventListener("dragover", function(event){
+        event
+          .dataTransfer
+          .setData('text/plain', event.target.id);
+
+        event
+          .currentTarget
+          .style
+          .backgroundColor = 'yellow';
+        console.log("draggingover");
+        event.preventDefault();
+      })
+      newDiv.addEventListener("drop", function(event){
+        const id = event
+          .dataTransfer
+          .getData('text');
+
+        const draggableElement = document.getElementById(id);
+        const dropzone = event.target;
+
+        dropzone.appendChild(draggableElement);
+
+        event
+          .dataTransfer
+          .clearData();
+      })
       newDiv.textContent = categoryTitle;
       newDiv.setAttribute("id", "categoryId" + localStorage.getItem("categoryNum").toString());
       categoryDiv.appendChild(newDiv);
@@ -59,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
       divDict["name"] = categoryTitle;
       divDict["tab_ids"] = [];
       localStorage.setItem(localStorage.getItem("categoryNum"), JSON.stringify(divDict));
-
 
 
 
@@ -95,10 +160,12 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 
 });
 
-
+//Clears all categories currently
 var clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', function(){
   localStorage.clear();
+  var node= document.getElementById("categoryList");
+  node.querySelectorAll('*').forEach(n => n.remove());
 });
 
 
@@ -122,7 +189,16 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
           chrome.windows.update(tab.windowId, {focused: true});
           chrome.tabs.update(tab.id, {selected: true});
         })
-        li.appendChild(a);
+        var dragSpan = document.createElement("span");
+        dragSpan.addEventListener("dragstart", function(){
+          event
+            .dataTransfer
+            .setData('text/plain', event.target.id);
+        })
+        dragSpan.setAttribute("id", "drag" + tab.id);
+        dragSpan.setAttribute("draggable", "true");
+        dragSpan.appendChild(a)
+        li.appendChild(dragSpan);
         li.setAttribute("id", "li" + currTabId.toString()); // added line
         ul.appendChild(li);
       }else{
