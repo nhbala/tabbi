@@ -15,7 +15,10 @@ windows.forEach(function(window){
       a.textContent = tab.title;
       a.setAttribute("id", tab.id);
       a.addEventListener('click', function(){
-        chrome.tabs.update(tab.id, {selected: true})
+        console.log("hixs");
+        chrome.windows.update(tab.windowId, {focused: true});
+        chrome.tabs.update(tab.id, {selected: true});
+
       })
       li.appendChild(a);
       li.setAttribute("id", "li" + currTabId.toString()); // added line
@@ -48,7 +51,6 @@ windows.forEach(function(window){
 
 
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-  console.log(tabId)
   var currElement = document.getElementById("li" + tabId)
   currElement.remove()
 
@@ -66,6 +68,7 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
       if (currElement == null){
         console.log(tab.url);
         console.log(tab.id)
+        console.log(tab.windowId)
         let currTabId = tab.id
         var ul = document.getElementById("myUL");
         var li = document.createElement("li");
@@ -73,7 +76,11 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
         a.textContent = tab.title;
         a.setAttribute("id", tab.id);
         a.addEventListener('click', function(){
-          chrome.tabs.update(tab.id, {selected: true})
+          console.log("hixs");
+          chrome.windows.update(tab.windowId, {focused: true});
+          chrome.tabs.update(tab.id, {selected: true});
+          let i = chrome.windows.get(tab.windowId);
+          console.log(i.focused)
         })
         li.appendChild(a);
         li.setAttribute("id", "li" + currTabId.toString()); // added line
