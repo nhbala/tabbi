@@ -5,11 +5,24 @@
   <title>Document</title>
 </head>
 <body>
-  <h1>These are your current tabs</h2>
-    <input type="text" id="searchBar"  placeholder="Search for names.." title="Type in a name">
 
+  <div id="tablist">
+  <h1>These are your current tabs</h1>
+    <input type="text" id="searchBar"  placeholder="Search for names.." title="Type in a name">
     <ul id="myUL">
     </ul>
+  </div>
+
+  <div>
+    <h1>Input new Categories</h2>
+      <input type="text" id="newCategoryText" placeholder="Input new Categories..">
+      <button id="createButton">Create!</button>
+      <button id="clearButton">Clear!</button>
+    <h2>These are your current cateogories</h2>
+    <div id="categoryList">
+    </div>
+
+  </div>
 
   <script src="content.js" charset="utf-8"></script>
 </body>
