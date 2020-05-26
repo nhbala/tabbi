@@ -1,23 +1,29 @@
 document.addEventListener('DOMContentLoaded', function() {
 
 
-//   chrome.windows.getAll({populate:true},function(windows){
-// windows.forEach(function(window){
-//   window.tabs.forEach(function(tab){
-//     //collect all of the urls here, I will just log them instead
-//     console.log(tab.url);
-//     console.log(tab.id)
-//     var ul = document.getElementById("myUL");
-//     var li = document.createElement("li");
-//     var a = document.createElement("a");
-//     a.textContent = tab.title;
-//     a.setAttribute('href', tab.url);
-//     li.appendChild(a);
-//     li.setAttribute("id", tab.id); // added line
-//     ul.appendChild(li);
-//   });
-// });
-// });
+  chrome.windows.getAll({populate:true},function(windows){
+windows.forEach(function(window){
+  window.tabs.forEach(function(tab){
+    var currElement = document.getElementById(tab.id)
+
+      console.log(tab.url);
+      console.log(tab.id)
+      let currTabId = tab.id
+      var ul = document.getElementById("myUL");
+      var li = document.createElement("li");
+      var a = document.createElement("button");
+      a.textContent = tab.title;
+      a.setAttribute("id", tab.id);
+      a.addEventListener('click', function(){
+        chrome.tabs.update(tab.id, {selected: true})
+      })
+      li.appendChild(a);
+      li.setAttribute("id", "li" + currTabId.toString()); // added line
+      ul.appendChild(li);
+    });
+  });
+});
+
 
     var link = document.getElementById('searchBar');
     link.addEventListener('keydown', function() {
@@ -40,27 +46,42 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+  console.log(tabId)
+  var currElement = document.getElementById("li" + tabId)
+  currElement.remove()
+
+});
+
+
+
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   if (changeInfo.status == 'complete') {
 
     chrome.windows.getAll({populate:true},function(windows){
   windows.forEach(function(window){
     window.tabs.forEach(function(tab){
-      //collect all of the urls here, I will just log them instead
-      console.log(tab.url);
-      console.log(tab.id)
-      let currTabId = tab.id
-      var ul = document.getElementById("myUL");
-      var li = document.createElement("li");
-      var a = document.createElement("button");
-      a.textContent = tab.title;
-      a.setAttribute("id", tab.id);
-      a.addEventListener('click', function(){
-        chrome.tabs.update(tab.id, {selected: true})
-      })
-      li.appendChild(a);
-      // li.setAttribute("id", tab.id); // added line
-      ul.appendChild(li);
+      var currElement = document.getElementById(tab.id)
+      if (currElement == null){
+        console.log(tab.url);
+        console.log(tab.id)
+        let currTabId = tab.id
+        var ul = document.getElementById("myUL");
+        var li = document.createElement("li");
+        var a = document.createElement("button");
+        a.textContent = tab.title;
+        a.setAttribute("id", tab.id);
+        a.addEventListener('click', function(){
+          chrome.tabs.update(tab.id, {selected: true})
+        })
+        li.appendChild(a);
+        li.setAttribute("id", "li" + currTabId.toString()); // added line
+        ul.appendChild(li);
+      }else{
+        currElement.textContent = tab.title
+      }
+
 
     });
   });
