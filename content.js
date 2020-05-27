@@ -1,19 +1,17 @@
 //When content is first loaded function call
 document.addEventListener('DOMContentLoaded', function() {
 
-  // localStorage.clear();
+
   //Adding in tabs on start up? (do we need to include first tab could be removed later)
   chrome.windows.getAll({populate:true},function(windows){
     windows.forEach(function(window){
       window.tabs.forEach(function(tab){
-        console.log(tab.id)
         var currElement = document.getElementById(tab.id)
         let currNumberDivs = localStorage.getItem("categoryNum");
         if (currNumberDivs != null){
           let existsFlag = false;
           for (i = 1; i <= currNumberDivs; i++){
             let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
-            console.log(curr_tabs)
             if (curr_tabs.includes(tab.id.toString()) == true){
               existsFlag = true
               break;
@@ -22,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
           if (existsFlag == false){
             tabButtonCreator(tab, currElement);
           }
-          console.log(existsFlag);
         }else{
           tabButtonCreator(tab, currElement);
         }
@@ -40,42 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let categoryTitle = currDict["name"];
         let categoryDiv = document.getElementById("categoryList");
         let newDiv = document.createElement("div");
-        newDiv.addEventListener("dragover", function(event){
-          event
-            .dataTransfer
-            .setData('text/plain', event.target.id);
-          //
-          // event
-          //   .currentTarget
-          //   .style
-          //   .backgroundColor = 'yellow';
-          console.log("draggingover");
-          event.preventDefault();
-        })
-        newDiv.addEventListener("drop", function(event){
-          const id = event
-            .dataTransfer
-            .getData('text');
-
-
-          const draggableElement = document.getElementById(id);
-          //need to change event.target
-          const dropzone = event.target;
-          if (dropzone.id.includes("category") != true){
-            console.log("should move the thing its over over some")
-          }else{
-            console.log(dropzone.id);
-            let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
-            currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
-            localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
-          }
-
-          dropzone.appendChild(draggableElement);
-
-          event
-            .dataTransfer
-            .clearData();
-        })
+        categoryCreator(newDiv);
         newDiv.textContent = categoryTitle;
         newDiv.setAttribute("id", "categoryId" + i);
         categoryDiv.appendChild(newDiv);
@@ -106,17 +68,12 @@ document.addEventListener('DOMContentLoaded', function() {
           });
 
         })
-
-
-
-
-
       }
     }
 
 
 
-
+    //creating category elements
     var createButton = document.getElementById('createButton');
     createButton.addEventListener('click', function(){
       if (localStorage.getItem("categoryNum") === null) {
@@ -129,44 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
       let categoryTitle = document.getElementById("newCategoryText").value;
       let categoryDiv = document.getElementById("categoryList");
       let newDiv = document.createElement("div");
-      newDiv.addEventListener("dragover", function(event){
-        event
-          .dataTransfer
-          .setData('text/plain', event.target.id);
-        console.log(event.target.id)
-
-        // event
-        //   .currentTarget
-        //   .style
-        //   .backgroundColor = 'yellow';
-        console.log("draggingover");
-        event.preventDefault();
-      })
-      newDiv.addEventListener("drop", function(event){
-        const id = event
-          .dataTransfer
-          .getData('text');
-
-        const draggableElement = document.getElementById(id);
-        console.log(draggableElement);
-        const dropzone = event.target;
-        if (dropzone.id.includes("category") != true){
-          console.log("should move the thing its over over some")
-        }else{
-          console.log("this is the category we changing")
-          console.log(dropzone.id)
-          let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
-          currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
-          localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
-        }
-
-
-        dropzone.appendChild(draggableElement);
-
-        event
-          .dataTransfer
-          .clearData();
-      })
+      categoryCreator(newDiv);
       newDiv.textContent = categoryTitle;
       newDiv.setAttribute("id", "categoryId" + localStorage.getItem("categoryNum").toString());
       categoryDiv.appendChild(newDiv);
@@ -202,11 +122,76 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+
+function categoryCreator(newDiv){
+  newDiv.addEventListener("dragover", function(event){
+    event
+      .dataTransfer
+      .setData('text/plain', event.target.id);
+    //
+    // event
+    //   .currentTarget
+    //   .style
+    //   .backgroundColor = 'yellow';
+    console.log("draggingover");
+    event.preventDefault();
+  })
+  newDiv.addEventListener("drop", function(event){
+    const id = event
+      .dataTransfer
+      .getData('text');
+
+
+    const draggableElement = document.getElementById(id);
+    //need to change event.target
+    const dropzone = event.target;
+    if (dropzone.id.includes("category") != true){
+      console.log("should move the thing its over over some")
+    }else{
+      console.log(dropzone.id);
+      let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
+      currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
+      let currElement = document.getElementById("li" + draggableElement.id.replace('drag', ''));
+      currElement.remove();
+      localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+    }
+
+    dropzone.appendChild(draggableElement);
+
+    event
+      .dataTransfer
+      .clearData();
+  })
+}
+
 // When a tab is closed/window is closed
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
   var currElement = document.getElementById("li" + tabId)
-  currElement.remove()
-
+  if (currElement == null){
+    let currNumberDivs = localStorage.getItem("categoryNum");
+    chrome.windows.getAll({populate:true},function(windows){
+    windows.forEach(function(window){
+      window.tabs.forEach(function(tab){
+        for (i = 1; i <= currNumberDivs; i++){
+          let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
+          let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+          if (curr_tabs.includes(tabId.toString()) == true){
+            const index = curr_tabs.indexOf(tabId.toString());
+            if (index > -1){
+              curr_tabs.splice(index,1);
+            }
+            curr_categoryDict['tab_ids'] = curr_tabs;
+            localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+            break
+          }
+        }
+      });
+    });
+  });
+  }else{
+    currElement.remove();
+  }
 });
 
 //Clears all categories currently
@@ -243,21 +228,22 @@ function tabButtonCreator(tab, currElement){
   ul.appendChild(li);
 }
 
-//When tabs are added/updated
+//When tabs are added/updated/reloaded
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   if (changeInfo.status == 'complete') {
     //Checking all the current tabs open
+    console.log("somethign Changed");
     chrome.windows.getAll({populate:true},function(windows){
   windows.forEach(function(window){
     window.tabs.forEach(function(tab){
       var currElement = document.getElementById(tab.id)
+      console.log(currElement)
       if (currElement == null){
         let currNumberDivs = localStorage.getItem("categoryNum");
         if (currNumberDivs != null){
           let existsFlag = false;
           for (i = 1; i <= currNumberDivs; i++){
             let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
-            console.log(curr_tabs)
             if (curr_tabs.includes(tab.id.toString()) == true){
               existsFlag = true
               break;
@@ -266,13 +252,10 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
           if (existsFlag == false){
             tabButtonCreator(tab, currElement);
           }
-          console.log(existsFlag);
         }
       }else{
         currElement.textContent = tab.title
       }
-
-
     });
   });
   });
