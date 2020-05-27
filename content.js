@@ -6,31 +6,28 @@ document.addEventListener('DOMContentLoaded', function() {
   chrome.windows.getAll({populate:true},function(windows){
     windows.forEach(function(window){
       window.tabs.forEach(function(tab){
-          var currElement = document.getElementById(tab.id)
-          let currTabId = tab.id
-          var ul = document.getElementById("myUL");
-          var li = document.createElement("li");
-          var a = document.createElement("button");
-          a.textContent = tab.title;
-          a.setAttribute("id", tab.id);
-          a.addEventListener('click', function(){
-            chrome.windows.update(tab.windowId, {focused: true});
-            chrome.tabs.update(tab.id, {selected: true});
-          })
-          var dragSpan = document.createElement("span");
-          dragSpan.addEventListener("dragstart", function(event){
-            event
-              .dataTransfer
-              .setData('text/plain', event.target.id);
+        console.log(tab.id)
+        var currElement = document.getElementById(tab.id)
+        let currNumberDivs = localStorage.getItem("categoryNum");
+        if (currNumberDivs != null){
+          let existsFlag = false;
+          for (i = 1; i <= currNumberDivs; i++){
+            let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+            console.log(curr_tabs)
+            if (curr_tabs.includes(tab.id.toString()) == true){
+              existsFlag = true
+              break;
+            }
+          }
+          if (existsFlag == false){
+            tabButtonCreator(tab, currElement);
+          }
+          console.log(existsFlag);
+        }else{
+          tabButtonCreator(tab, currElement);
+        }
 
-            console.log("dragging");
-          });
-          dragSpan.setAttribute("id", "drag" + tab.id);
-          dragSpan.setAttribute("draggable", "true");
-          dragSpan.appendChild(a)
-          li.appendChild(dragSpan);
-          li.setAttribute("id", "li" + currTabId.toString()); // added line
-          ul.appendChild(li);
+
         });
       });
     });
@@ -39,7 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currNumberDivs = localStorage.getItem("categoryNum");
     if (currNumberDivs != null){
       for (i = 1; i <= currNumberDivs; i++){
-        let categoryTitle = JSON.parse(localStorage.getItem(i))["name"];
+        let currDict = JSON.parse(localStorage.getItem("categoryId" + i))
+        let categoryTitle = currDict["name"];
         let categoryDiv = document.getElementById("categoryList");
         let newDiv = document.createElement("div");
         newDiv.addEventListener("dragover", function(event){
@@ -61,9 +59,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
           const draggableElement = document.getElementById(id);
-          console.log(draggableElement)
+          //need to change event.target
           const dropzone = event.target;
-          console.log(dropzone)
+          if (dropzone.id.includes("category") != true){
+            console.log("should move the thing its over over some")
+          }else{
+            console.log(dropzone.id);
+            let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
+            currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
+            localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+          }
 
           dropzone.appendChild(draggableElement);
 
@@ -74,6 +79,38 @@ document.addEventListener('DOMContentLoaded', function() {
         newDiv.textContent = categoryTitle;
         newDiv.setAttribute("id", "categoryId" + i);
         categoryDiv.appendChild(newDiv);
+        //add back the moved tabs under their respective categories here
+        let current_tabs = currDict["tab_ids"]
+        current_tabs.forEach(function(item){
+          chrome.tabs.get(parseInt(item, 10), function(tab){
+            let currTabId = tab.id
+            // var ul = document.getElementById("myUL");
+            // var li = document.createElement("li");
+            var a = document.createElement("button");
+            a.textContent = tab.title;
+            a.setAttribute("id", tab.id);
+            a.addEventListener('click', function(){
+              chrome.windows.update(tab.windowId, {focused: true});
+              chrome.tabs.update(tab.id, {selected: true});
+            })
+            var dragSpan = document.createElement("span");
+            dragSpan.addEventListener("dragstart", function(){
+              event
+                .dataTransfer
+                .setData('text/plain', event.target.id);
+            })
+            dragSpan.setAttribute("id", "drag" + tab.id);
+            dragSpan.setAttribute("draggable", "true");
+            dragSpan.appendChild(a);
+            newDiv.appendChild(dragSpan);
+          });
+
+        })
+
+
+
+
+
       }
     }
 
@@ -96,11 +133,12 @@ document.addEventListener('DOMContentLoaded', function() {
         event
           .dataTransfer
           .setData('text/plain', event.target.id);
+        console.log(event.target.id)
 
-        event
-          .currentTarget
-          .style
-          .backgroundColor = 'yellow';
+        // event
+        //   .currentTarget
+        //   .style
+        //   .backgroundColor = 'yellow';
         console.log("draggingover");
         event.preventDefault();
       })
@@ -110,7 +148,18 @@ document.addEventListener('DOMContentLoaded', function() {
           .getData('text');
 
         const draggableElement = document.getElementById(id);
+        console.log(draggableElement);
         const dropzone = event.target;
+        if (dropzone.id.includes("category") != true){
+          console.log("should move the thing its over over some")
+        }else{
+          console.log("this is the category we changing")
+          console.log(dropzone.id)
+          let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
+          currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
+          localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+        }
+
 
         dropzone.appendChild(draggableElement);
 
@@ -124,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
       let divDict = {};
       divDict["name"] = categoryTitle;
       divDict["tab_ids"] = [];
-      localStorage.setItem(localStorage.getItem("categoryNum"), JSON.stringify(divDict));
+      localStorage.setItem("categoryId" +localStorage.getItem("categoryNum"), JSON.stringify(divDict));
 
 
 
@@ -168,39 +217,57 @@ clearButton.addEventListener('click', function(){
   node.querySelectorAll('*').forEach(n => n.remove());
 });
 
+//create tabbuttons
+function tabButtonCreator(tab, currElement){
+  let currTabId = tab.id
+  var ul = document.getElementById("myUL");
+  var li = document.createElement("li");
+  var a = document.createElement("button");
+  a.textContent = tab.title;
+  a.setAttribute("id", tab.id);
+  a.addEventListener('click', function(){
+    chrome.windows.update(tab.windowId, {focused: true});
+    chrome.tabs.update(tab.id, {selected: true});
+  })
+  var dragSpan = document.createElement("span");
+  dragSpan.addEventListener("dragstart", function(){
+    event
+      .dataTransfer
+      .setData('text/plain', event.target.id);
+  })
+  dragSpan.setAttribute("id", "drag" + tab.id);
+  dragSpan.setAttribute("draggable", "true");
+  dragSpan.appendChild(a)
+  li.appendChild(dragSpan);
+  li.setAttribute("id", "li" + currTabId.toString()); // added line
+  ul.appendChild(li);
+}
 
 //When tabs are added/updated
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
   if (changeInfo.status == 'complete') {
-
     //Checking all the current tabs open
     chrome.windows.getAll({populate:true},function(windows){
   windows.forEach(function(window){
     window.tabs.forEach(function(tab){
       var currElement = document.getElementById(tab.id)
       if (currElement == null){
-        let currTabId = tab.id
-        var ul = document.getElementById("myUL");
-        var li = document.createElement("li");
-        var a = document.createElement("button");
-        a.textContent = tab.title;
-        a.setAttribute("id", tab.id);
-        a.addEventListener('click', function(){
-          chrome.windows.update(tab.windowId, {focused: true});
-          chrome.tabs.update(tab.id, {selected: true});
-        })
-        var dragSpan = document.createElement("span");
-        dragSpan.addEventListener("dragstart", function(){
-          event
-            .dataTransfer
-            .setData('text/plain', event.target.id);
-        })
-        dragSpan.setAttribute("id", "drag" + tab.id);
-        dragSpan.setAttribute("draggable", "true");
-        dragSpan.appendChild(a)
-        li.appendChild(dragSpan);
-        li.setAttribute("id", "li" + currTabId.toString()); // added line
-        ul.appendChild(li);
+        let currNumberDivs = localStorage.getItem("categoryNum");
+        if (currNumberDivs != null){
+          let existsFlag = false;
+          for (i = 1; i <= currNumberDivs; i++){
+            let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+            console.log(curr_tabs)
+            if (curr_tabs.includes(tab.id.toString()) == true){
+              existsFlag = true
+              break;
+            }
+          }
+          if (existsFlag == false){
+            tabButtonCreator(tab, currElement);
+          }
+          console.log(existsFlag);
+        }
       }else{
         currElement.textContent = tab.title
       }
