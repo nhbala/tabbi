@@ -92,13 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             deleteElement.remove()
             //reset dictionary
-            localStorage.removeItem("categoryId" + currentCategory)
-            let catArr = JSON.parse(localStorage.getItem("categoryNum"))
-            const index = catArr.indexOf(currentCategory);
-            if (index > -1){
-              catArr.splice(index,1);
-            }
-            localStorage.setItem("categoryNum", JSON.stringify(catArr))
+
 
 
 
@@ -106,7 +100,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
           })
-          localStorage.removeItem(localStorage.getItem("categoryId" + currentCategory))
+          localStorage.removeItem("categoryId" + currentCategory)
+          let catArr = JSON.parse(localStorage.getItem("categoryNum"))
+          const index = catArr.indexOf(currentCategory);
+          if (index > -1){
+            catArr.splice(index,1);
+          }
+          localStorage.setItem("categoryNum", JSON.stringify(catArr))
+
           let catel = document.getElementById('categoryId' + currentCategory)
           catel.remove()
           refreshTabs()
@@ -199,8 +200,13 @@ document.addEventListener('DOMContentLoaded', function() {
       }else{
         //add to array
         let currArr = JSON.parse(localStorage.getItem("categoryNum"));
-        currArr.push(document.getElementById("newCategoryText").value)
-        localStorage.setItem("categoryNum", JSON.stringify(currArr));
+        if (currArr.includes(document.getElementById("newCategoryText").value )){
+          alert("you already have this category!")
+          return
+        }else{
+          currArr.push(document.getElementById("newCategoryText").value)
+          localStorage.setItem("categoryNum", JSON.stringify(currArr));
+        }
       }
       let categoryTitle = document.getElementById("newCategoryText").value;
       let categoryDiv = document.getElementById("categoryList");
@@ -258,13 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
           })
           deleteElement.remove()
           //reset dictionary
-          localStorage.removeItem("categoryId" + currentCategory)
-          let catArr = JSON.parse(localStorage.getItem("categoryNum"))
-          const index = catArr.indexOf(currentCategory);
-          if (index > -1){
-            catArr.splice(index,1);
-          }
-          localStorage.setItem("categoryNum", JSON.stringify(catArr))
+
 
 
 
@@ -272,7 +272,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
         })
-        localStorage.removeItem(localStorage.getItem("categoryId" + currentCategory))
+        localStorage.removeItem("categoryId" + currentCategory)
+        let catArr = JSON.parse(localStorage.getItem("categoryNum"))
+        const index = catArr.indexOf(currentCategory);
+        if (index > -1){
+          catArr.splice(index,1);
+        }
+        localStorage.setItem("categoryNum", JSON.stringify(catArr))
         let catel = document.getElementById('categoryId' + currentCategory)
         catel.remove()
         refreshTabs()
