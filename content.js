@@ -2,17 +2,21 @@
 document.addEventListener('DOMContentLoaded', function() {
 
 
-
+  for (var i = 0; i < localStorage.length; i++){
+    console.log(localStorage.key(i))
+    console.log(localStorage.getItem(localStorage.key(i)));
+  }
 
   //Adding in tabs on start up? (do we need to include first tab could be removed later)
   chrome.windows.getAll({populate:true},function(windows){
     windows.forEach(function(window){
       window.tabs.forEach(function(tab){
         var currElement = document.getElementById(tab.id)
-        let currNumberDivs = localStorage.getItem("categoryNum");
+        let currNumberDivs = JSON.parse(localStorage.getItem("categoryNum"));
         if (currNumberDivs != null){
           let existsFlag = false;
-          for (i = 1; i <= currNumberDivs; i++){
+          for (j = 0; j < currNumberDivs.length; j++){
+            i = currNumberDivs[j];
             let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
             if (curr_tabs.includes(tab.id.toString()) == true){
               existsFlag = true
@@ -32,11 +36,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     //Keeping category titles
-    let currNumberDivs = localStorage.getItem("categoryNum");
+    let currNumberDivs = JSON.parse(localStorage.getItem("categoryNum"));
     if (currNumberDivs != null){
-      for (i = 1; i <= currNumberDivs; i++){
+      for (j = 0; j < currNumberDivs.length; j++){
+        i = currNumberDivs[j]
+        console.log(i)
         let currDict = JSON.parse(localStorage.getItem("categoryId" + i))
-
+        console.log(currDict)
         let categoryTitle = currDict["name"];
         let categoryDiv = document.getElementById("categoryList");
         let newDiv = document.createElement("div");
@@ -106,11 +112,12 @@ document.addEventListener('DOMContentLoaded', function() {
               let tabId = tab.id
               var currElement = document.getElementById("li" + tabId)
               if (currElement == null){
-                let currNumberDivs = localStorage.getItem("categoryNum");
+                let currNumberDivs = JSON.parse(localStorage.getItem("categoryNum"));
                 chrome.windows.getAll({populate:true},function(windows){
                 windows.forEach(function(window){
                   window.tabs.forEach(function(tab){
-                    for (i = 1; i <= currNumberDivs; i++){
+                    for (j = 0; j < currNumberDivs.length; j++){
+                      i = currNumberDivs[j]
                       let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
                       let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
                       if (curr_tabs.includes(tabId.toString()) == true){
@@ -150,11 +157,13 @@ document.addEventListener('DOMContentLoaded', function() {
     var createButton = document.getElementById('createButton');
     createButton.addEventListener('click', function(){
       if (localStorage.getItem("categoryNum") === null) {
-        localStorage.setItem("categoryNum", 1);
+        let newArr = [document.getElementById("newCategoryText").value]
+        localStorage.setItem("categoryNum", JSON.stringify(newArr));
       }else{
-        //increase number for categoryNum
-        let curr_num = parseInt(localStorage.getItem("categoryNum"),10) + 1;
-        localStorage.setItem("categoryNum", curr_num);
+        //add to array
+        let currArr = JSON.parse(localStorage.getItem("categoryNum"));
+        currArr.push(document.getElementById("newCategoryText").value)
+        localStorage.setItem("categoryNum", JSON.stringify(currArr));
       }
       let categoryTitle = document.getElementById("newCategoryText").value;
       let categoryDiv = document.getElementById("categoryList");
@@ -166,13 +175,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
       newDiv.textContent = categoryTitle;
-      newDiv.setAttribute("id", "categoryId" + localStorage.getItem("categoryNum").toString());
+      newDiv.setAttribute("id", "categoryId" + categoryTitle);
 
 
       //adding delete tabs from category button
       var catdelButton = document.createElement("button");
       catdelButton.textContent = "close!";
-      catdelButton.setAttribute("id", "deletecategoryId" + localStorage.getItem("categoryNum").toString());
+      catdelButton.setAttribute("id", "deletecategoryId" + categoryTitle);
       catdelButton.addEventListener('click', function(){
         console.log("hello1")
         let currentCategory = catdelButton.id.replace('deletecategoryId', '')
@@ -188,51 +197,13 @@ document.addEventListener('DOMContentLoaded', function() {
           //reset dictionary
           let currDict = JSON.parse(localStorage.getItem("categoryId" + currentCategory));
           currDict["tab_ids"] = []
+          console.log(currentCategory)
           localStorage.setItem("categoryId" + currentCategory, JSON.stringify(currDict));
 
 
 
         })
       });
-
-      // //delete category button
-      // var catcloseButton = document.createElement("button");
-      // catcloseButton.textContent = "delete!";
-      // catcloseButton.setAttribute("id", "closecategoryId" + localStorage.getItem("categoryNum").toString());
-      // console.log(localStorage.getItem("categoryNum"));
-      // catcloseButton.addEventListener('click', function(){
-      //   console.log("hello1")
-      //   console.log(localStorage.getItem("categoryNum"));
-      //   let currentCategory = catcloseButton.id.replace('closecategoryId', '')
-      //   let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
-      //   console.log("current category is " + currentCategory);
-      //   console.log(localStorage.getItem("categoryNum"));
-      //   for (let i = parseInt(currentCategory); i < localStorage.getItem("categoryNum"); i++){
-      //     nextCat = localStorage.getItem("categoryId" + (i + 1));
-      //     localStorage.setItem("categoryId" + i, nextCat);
-      //     localStorage.removeItem("categoryId" + (i+1))
-      //   }
-      //   curr_tabs.forEach(function(tab){
-      //     console.log("tabs going back")
-      //     console.log(tab)
-      //     var deleteElement = document.getElementById("drag" + tab)
-      //     chrome.tabs.get(parseInt(tab, 10), function(tab){
-      //       tabButtonCreator(tab, null)
-      //     })
-      //     deleteElement.remove()
-      //     //clear dic
-      //     // let currDict = JSON.parse(localStorage.getItem("categoryId" + currentCategory));
-      //     // currDict["tab_ids"] = []
-      //     localStorage.removeItem("categoryId" + currentCategory);
-      //
-      //
-      //
-      //   })
-      //
-      // });
-
-
-
 
 
       // newDiv.append(catcloseButton)
@@ -241,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
       let divDict = {};
       divDict["name"] = categoryTitle;
       divDict["tab_ids"] = [];
-      localStorage.setItem("categoryId" +localStorage.getItem("categoryNum"), JSON.stringify(divDict));
+      localStorage.setItem("categoryId" + categoryTitle, JSON.stringify(divDict));
 
 
 
@@ -295,14 +266,15 @@ function categoryCreator(newDiv, needRefresh){
     //need to change event.target
     let dropzone = event.target;
     if (dropzone.id.includes("category") != true){
-      let currNumberDivs = localStorage.getItem("categoryNum");
-      for (i = 1; i <= currNumberDivs; i++){
-        let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
-        let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+      let currNumberDivs = JSON.parse(localStorage.getItem("categoryNum"));
+      for (i = 0; i < currNumberDivs.length; i++){
+        j = currNumberDivs[i]
+        let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + j));
+        let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + j))["tab_ids"];
         //moving new tab to correct category
         if (dropzone.id != draggableElement.id.replace('drag', '')){
           if (curr_tabs.includes(dropzone.id.replace('drag', '')) == true){
-            dropzone = document.getElementById("categoryId" + i);
+            dropzone = document.getElementById("categoryId" + j);
             let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
             currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
             localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
@@ -313,7 +285,7 @@ function categoryCreator(newDiv, needRefresh){
             if (index > -1){
               curr_tabs.splice(index,1);
               curr_categoryDict['tab_ids'] = curr_tabs;
-              localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+              localStorage.setItem("categoryId" + j, JSON.stringify(curr_categoryDict));
             }
           }
           console.log("here?")
@@ -324,6 +296,7 @@ function categoryCreator(newDiv, needRefresh){
         }
 
     }else{
+      console.log(dropzone.id)
       let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
       let currBool = (currCategorydict['tab_ids'].includes(draggableElement.id.replace('drag', '')))
       if (currBool == false){
@@ -331,19 +304,20 @@ function categoryCreator(newDiv, needRefresh){
         let currElement = document.getElementById("li" + draggableElement.id.replace('drag', ''));
         //check if element is in list or in another category change to helper funciton we already have something like this?
         if (currElement == null){
-          let currNumberDivs = localStorage.getItem("categoryNum");
+          let currNumberDivs = JSON.parse(localStorage.getItem("categoryNum"));
           chrome.windows.getAll({populate:true},function(windows){
           windows.forEach(function(window){
             window.tabs.forEach(function(tab){
-              for (i = 1; i <= currNumberDivs; i++){
-                let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
-                let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+              for (i = 0; i < currNumberDivs.length; i++){
+                j = currNumberDivs[i]
+                let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + j));
+                let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + j))["tab_ids"];
                 if (curr_tabs.includes(draggableElement.id.replace('drag', '')) == true){
                   const index = curr_tabs.indexOf(draggableElement.id.replace('drag', ''));
                   if (index > -1){
                     curr_tabs.splice(index,1);
                     curr_categoryDict['tab_ids'] = curr_tabs;
-                    localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+                    localStorage.setItem("categoryId" + j, JSON.stringify(curr_categoryDict));
                     localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
                   }
                 }
@@ -374,20 +348,21 @@ function categoryCreator(newDiv, needRefresh){
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
   var currElement = document.getElementById("li" + tabId)
   if (currElement == null){
-    let currNumberDivs = localStorage.getItem("categoryNum");
+    let currNumberDivs = JSON.parse(localStorage.getItem("categoryNum"));
     chrome.windows.getAll({populate:true},function(windows){
     windows.forEach(function(window){
       window.tabs.forEach(function(tab){
-        for (i = 1; i <= currNumberDivs; i++){
-          let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
-          let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+        for (i = 0; i < currNumberDivs.length; i++){
+          j = currNumberDivs[i]
+          let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + j));
+          let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + j))["tab_ids"];
           if (curr_tabs.includes(tabId.toString()) == true){
             const index = curr_tabs.indexOf(tabId.toString());
             if (index > -1){
               curr_tabs.splice(index,1);
             }
             curr_categoryDict['tab_ids'] = curr_tabs;
-            localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+            localStorage.setItem("categoryId" + j, JSON.stringify(curr_categoryDict));
             var currDrag = document.getElementById("drag" + tabId)
             currDrag.remove();
           }
@@ -449,20 +424,21 @@ function tabButtonCreator(tab, currElement){
     let tabId = tab.id
     var currElement = document.getElementById("li" + tabId)
     if (currElement == null){
-      let currNumberDivs = localStorage.getItem("categoryNum");
+      let currNumberDivs = JSON.parse(localStorage.getItem("categoryNum"));
       chrome.windows.getAll({populate:true},function(windows){
       windows.forEach(function(window){
         window.tabs.forEach(function(tab){
-          for (i = 1; i <= currNumberDivs; i++){
-            let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
-            let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+          for (i = 0; i < currNumberDivs.length; i++){
+            j = currNumberDivs[i]
+            let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + j));
+            let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + j))["tab_ids"];
             if (curr_tabs.includes(tabId.toString()) == true){
               const index = curr_tabs.indexOf(tabId.toString());
               if (index > -1){
                 curr_tabs.splice(index,1);
               }
               curr_categoryDict['tab_ids'] = curr_tabs;
-              localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+              localStorage.setItem("categoryId" + j, JSON.stringify(curr_categoryDict));
               var currDrag = document.getElementById("drag" + tabId)
               currDrag.remove();
             }
@@ -500,10 +476,11 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
       var currElement = document.getElementById(tab.id)
       if (currElement == null){
         console.log("lets see")
-        let currNumberDivs = localStorage.getItem("categoryNum");
+        let currNumberDivs = JSON.parse(localStorage.getItem("categoryNum"));
         if (currNumberDivs != null){
           let existsFlag = false;
-          for (i = 1; i <= currNumberDivs; i++){
+          for (j = 0; j < currNumberDivs.length; j++){
+            i = currNumberDivs[j]
             let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
             if (curr_tabs.includes(tab.id.toString()) == true){
               existsFlag = true
