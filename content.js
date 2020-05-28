@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currNumberDivs != null){
       for (i = 1; i <= currNumberDivs; i++){
         let currDict = JSON.parse(localStorage.getItem("categoryId" + i))
+
         let categoryTitle = currDict["name"];
         let categoryDiv = document.getElementById("categoryList");
         let newDiv = document.createElement("div");
@@ -43,11 +44,10 @@ document.addEventListener('DOMContentLoaded', function() {
         newDiv.textContent = categoryTitle;
         newDiv.setAttribute("id", "categoryId" + i);
 
-
-
-        var catdelButton = document.createElement("button");
+        //delete tabs from category (more like a "clear button")
+        let catdelButton = document.createElement("button");
         catdelButton.textContent = "close!";
-        catdelButton.setAttribute("id", "deletecategoryId" + localStorage.getItem("categoryNum").toString());
+        catdelButton.setAttribute("id", "deletecategoryId" + i);
         catdelButton.addEventListener('click', function(){
           let currentCategory = catdelButton.id.replace('deletecategoryId', '')
           let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
@@ -169,11 +169,12 @@ document.addEventListener('DOMContentLoaded', function() {
       newDiv.setAttribute("id", "categoryId" + localStorage.getItem("categoryNum").toString());
 
 
-      //adding delete button
+      //adding delete tabs from category button
       var catdelButton = document.createElement("button");
       catdelButton.textContent = "close!";
       catdelButton.setAttribute("id", "deletecategoryId" + localStorage.getItem("categoryNum").toString());
       catdelButton.addEventListener('click', function(){
+        console.log("hello1")
         let currentCategory = catdelButton.id.replace('deletecategoryId', '')
         let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
         curr_tabs.forEach(function(tab){
@@ -194,6 +195,47 @@ document.addEventListener('DOMContentLoaded', function() {
         })
       });
 
+      // //delete category button
+      // var catcloseButton = document.createElement("button");
+      // catcloseButton.textContent = "delete!";
+      // catcloseButton.setAttribute("id", "closecategoryId" + localStorage.getItem("categoryNum").toString());
+      // console.log(localStorage.getItem("categoryNum"));
+      // catcloseButton.addEventListener('click', function(){
+      //   console.log("hello1")
+      //   console.log(localStorage.getItem("categoryNum"));
+      //   let currentCategory = catcloseButton.id.replace('closecategoryId', '')
+      //   let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
+      //   console.log("current category is " + currentCategory);
+      //   console.log(localStorage.getItem("categoryNum"));
+      //   for (let i = parseInt(currentCategory); i < localStorage.getItem("categoryNum"); i++){
+      //     nextCat = localStorage.getItem("categoryId" + (i + 1));
+      //     localStorage.setItem("categoryId" + i, nextCat);
+      //     localStorage.removeItem("categoryId" + (i+1))
+      //   }
+      //   curr_tabs.forEach(function(tab){
+      //     console.log("tabs going back")
+      //     console.log(tab)
+      //     var deleteElement = document.getElementById("drag" + tab)
+      //     chrome.tabs.get(parseInt(tab, 10), function(tab){
+      //       tabButtonCreator(tab, null)
+      //     })
+      //     deleteElement.remove()
+      //     //clear dic
+      //     // let currDict = JSON.parse(localStorage.getItem("categoryId" + currentCategory));
+      //     // currDict["tab_ids"] = []
+      //     localStorage.removeItem("categoryId" + currentCategory);
+      //
+      //
+      //
+      //   })
+      //
+      // });
+
+
+
+
+
+      // newDiv.append(catcloseButton)
       newDiv.appendChild(catdelButton);
       categoryDiv.appendChild(newDiv);
       let divDict = {};
