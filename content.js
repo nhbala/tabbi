@@ -42,7 +42,41 @@ document.addEventListener('DOMContentLoaded', function() {
         categoryCreator(newDiv, false);
         newDiv.textContent = categoryTitle;
         newDiv.setAttribute("id", "categoryId" + i);
+
+
+
+        var catdelButton = document.createElement("button");
+        catdelButton.textContent = "close!";
+        catdelButton.setAttribute("id", "deletecategoryId" + localStorage.getItem("categoryNum").toString());
+        catdelButton.addEventListener('click', function(){
+          let currentCategory = catdelButton.id.replace('deletecategoryId', '')
+          let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
+          curr_tabs.forEach(function(tab){
+            console.log("tabs going back")
+            console.log(tab)
+            var deleteElement = document.getElementById("drag" + tab)
+            chrome.tabs.get(parseInt(tab, 10), function(tab){
+              tabButtonCreator(tab, null)
+            })
+            deleteElement.remove()
+            //reset dictionary
+            let currDict = JSON.parse(localStorage.getItem("categoryId" + currentCategory));
+            currDict["tab_ids"] = []
+            localStorage.setItem("categoryId" + currentCategory, JSON.stringify(currDict));
+
+
+
+          })
+        });
+
+        newDiv.appendChild(catdelButton);
+
         categoryDiv.appendChild(newDiv);
+
+
+
+
+
         //add back the moved tabs under their respective categories here
         let current_tabs = currDict["tab_ids"]
         current_tabs.forEach(function(item){
@@ -126,8 +160,41 @@ document.addEventListener('DOMContentLoaded', function() {
       let categoryDiv = document.getElementById("categoryList");
       let newDiv = document.createElement("div");
       categoryCreator(newDiv, true);
+
+
+
+
+
       newDiv.textContent = categoryTitle;
       newDiv.setAttribute("id", "categoryId" + localStorage.getItem("categoryNum").toString());
+
+
+      //adding delete button
+      var catdelButton = document.createElement("button");
+      catdelButton.textContent = "close!";
+      catdelButton.setAttribute("id", "deletecategoryId" + localStorage.getItem("categoryNum").toString());
+      catdelButton.addEventListener('click', function(){
+        let currentCategory = catdelButton.id.replace('deletecategoryId', '')
+        let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
+        curr_tabs.forEach(function(tab){
+          console.log("tabs going back")
+          console.log(tab)
+          var deleteElement = document.getElementById("drag" + tab)
+          chrome.tabs.get(parseInt(tab, 10), function(tab){
+            tabButtonCreator(tab, null)
+          })
+          deleteElement.remove()
+          //reset dictionary
+          let currDict = JSON.parse(localStorage.getItem("categoryId" + currentCategory));
+          currDict["tab_ids"] = []
+          localStorage.setItem("categoryId" + currentCategory, JSON.stringify(currDict));
+
+
+
+        })
+      });
+
+      newDiv.appendChild(catdelButton);
       categoryDiv.appendChild(newDiv);
       let divDict = {};
       divDict["name"] = categoryTitle;
