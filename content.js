@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // var ul = document.getElementById("myUL");
             // var li = document.createElement("li");
             var a = document.createElement("button");
+            var d = document.createElement("button");
             a.textContent = tab.title;
             a.setAttribute("id", tab.id);
             a.addEventListener('click', function(){
@@ -63,9 +64,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 .dataTransfer
                 .setData('text/plain', event.target.id);
             })
+
+            //creating delete tab button!
+            d.textContent = "close!";
+            d.setAttribute("id", "close" + tab.id);
+            d.addEventListener('click', function(){
+              let tabId = tab.id
+              var currElement = document.getElementById("li" + tabId)
+              if (currElement == null){
+                let currNumberDivs = localStorage.getItem("categoryNum");
+                chrome.windows.getAll({populate:true},function(windows){
+                windows.forEach(function(window){
+                  window.tabs.forEach(function(tab){
+                    for (i = 1; i <= currNumberDivs; i++){
+                      let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
+                      let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+                      if (curr_tabs.includes(tabId.toString()) == true){
+                        const index = curr_tabs.indexOf(tabId.toString());
+                        if (index > -1){
+                          curr_tabs.splice(index,1);
+                        }
+                        curr_categoryDict['tab_ids'] = curr_tabs;
+                        localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+                        var currDrag = document.getElementById("drag" + tabId)
+                        currDrag.remove();
+                      }
+                    }
+                  });
+                });
+              });
+              }else{
+                currElement.remove();
+              }
+              chrome.tabs.remove(tabId);
+            })
+
             dragSpan.setAttribute("id", "drag" + tab.id);
             dragSpan.setAttribute("draggable", "true");
             dragSpan.appendChild(a);
+            dragSpan.appendChild(d);
             newDiv.appendChild(dragSpan);
           });
 
@@ -179,8 +216,6 @@ function categoryCreator(newDiv, needRefresh){
 
     }else{
       let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
-      console.log(draggableElement)
-      console.log(currCategorydict['tab_ids'])
       let currBool = (currCategorydict['tab_ids'].includes(draggableElement.id.replace('drag', '')))
       if (currBool == false){
         currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
@@ -211,7 +246,6 @@ function categoryCreator(newDiv, needRefresh){
           currElement.remove();
           localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
         }
-        console.log("here?1")
         dropzone.appendChild(draggableElement);
       }
     }
@@ -290,12 +324,49 @@ function tabButtonCreator(tab, currElement){
   var ul = document.getElementById("myUL");
   var li = document.createElement("li");
   var a = document.createElement("button");
+  var d = document.createElement("button");
+  //creating tab button
   a.textContent = tab.title;
   a.setAttribute("id", tab.id);
   a.addEventListener('click', function(){
     chrome.windows.update(tab.windowId, {focused: true});
     chrome.tabs.update(tab.id, {selected: true});
   })
+
+  //creating delete tab button!
+  d.textContent = "close!";
+  d.setAttribute("id", "close" + tab.id);
+  d.addEventListener('click', function(){
+    let tabId = tab.id
+    var currElement = document.getElementById("li" + tabId)
+    if (currElement == null){
+      let currNumberDivs = localStorage.getItem("categoryNum");
+      chrome.windows.getAll({populate:true},function(windows){
+      windows.forEach(function(window){
+        window.tabs.forEach(function(tab){
+          for (i = 1; i <= currNumberDivs; i++){
+            let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
+            let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+            if (curr_tabs.includes(tabId.toString()) == true){
+              const index = curr_tabs.indexOf(tabId.toString());
+              if (index > -1){
+                curr_tabs.splice(index,1);
+              }
+              curr_categoryDict['tab_ids'] = curr_tabs;
+              localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+              var currDrag = document.getElementById("drag" + tabId)
+              currDrag.remove();
+            }
+          }
+        });
+      });
+    });
+    }else{
+      currElement.remove();
+    }
+    chrome.tabs.remove(tabId);
+  })
+
   var dragSpan = document.createElement("span");
   dragSpan.addEventListener("dragstart", function(){
     event
@@ -305,6 +376,7 @@ function tabButtonCreator(tab, currElement){
   dragSpan.setAttribute("id", "drag" + tab.id);
   dragSpan.setAttribute("draggable", "true");
   dragSpan.appendChild(a)
+  dragSpan.appendChild(d)
   li.appendChild(dragSpan);
   li.setAttribute("id", "li" + currTabId.toString()); // added line
   ul.appendChild(li);
