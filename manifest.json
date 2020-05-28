@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "permissions": [
     "tabs",
-    "storage"
+    "storage",
+    "<all_urls>"
 ],
   "chrome_url_overrides" : {
     "newtab": "new_page.html"
