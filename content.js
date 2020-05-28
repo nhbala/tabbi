@@ -318,6 +318,27 @@ document.addEventListener('DOMContentLoaded', function() {
               }
           }
     });
+
+
+    var link2 = document.getElementById('searchCategories');
+    link2.addEventListener('keydown', function() {
+          let input, filter, ul, li, a, i, txtValue;
+          input = document.getElementById("searchCategories");
+          filter = input.value.toUpperCase();
+          ul = document.getElementById("categoryList");
+          li = ul.getElementsByTagName("div");
+          for (i = 0; i < li.length; i++) {
+              a = li[i].id.replace("categoryId", "");
+              txtValue = a
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                  li[i].style.display = "";
+              } else {
+                  li[i].style.display = "none";
+              }
+          }
+    });
+
+
 });
 
 
