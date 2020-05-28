@@ -73,10 +73,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
           })
+          refreshTabs()
+        });
+
+
+        let catclearButton = document.createElement("button");
+        catclearButton.textContent = "delete!";
+        catclearButton.setAttribute("id", "clearcategoryId" + categoryTitle);
+        catclearButton.addEventListener('click', function(){
+          console.log("HELLLO")
+          let currentCategory = catclearButton.id.replace('clearcategoryId', '')
+          console.log(catclearButton.id)
+          let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
+          curr_tabs.forEach(function(tab){
+            var deleteElement = document.getElementById("drag" + tab)
+            chrome.tabs.get(parseInt(tab, 10), function(tab){
+              tabButtonCreator(tab, null)
+            })
+            deleteElement.remove()
+            //reset dictionary
+            localStorage.removeItem("categoryId" + currentCategory)
+            let catArr = JSON.parse(localStorage.getItem("categoryNum"))
+            const index = catArr.indexOf(currentCategory);
+            if (index > -1){
+              catArr.splice(index,1);
+            }
+            localStorage.setItem("categoryNum", JSON.stringify(catArr))
+
+
+
+
+
+
+          })
+          localStorage.removeItem(localStorage.getItem("categoryId" + currentCategory))
+          let catel = document.getElementById('categoryId' + currentCategory)
+          catel.remove()
+          refreshTabs()
         });
 
         newDiv.appendChild(catdelButton);
-
+        newDiv.appendChild(catclearButton)
         categoryDiv.appendChild(newDiv);
 
 
@@ -203,10 +240,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
         })
+        refreshTabs()
+      });
+
+      let catclearButton = document.createElement("button");
+      catclearButton.textContent = "delete!";
+      catclearButton.setAttribute("id", "clearcategoryId" + categoryTitle);
+      catclearButton.addEventListener('click', function(){
+        console.log("HELLLO")
+        let currentCategory = catclearButton.id.replace('clearcategoryId', '')
+        console.log(catclearButton.id)
+        let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
+        curr_tabs.forEach(function(tab){
+          var deleteElement = document.getElementById("drag" + tab)
+          chrome.tabs.get(parseInt(tab, 10), function(tab){
+            tabButtonCreator(tab, null)
+          })
+          deleteElement.remove()
+          //reset dictionary
+          localStorage.removeItem("categoryId" + currentCategory)
+          let catArr = JSON.parse(localStorage.getItem("categoryNum"))
+          const index = catArr.indexOf(currentCategory);
+          if (index > -1){
+            catArr.splice(index,1);
+          }
+          localStorage.setItem("categoryNum", JSON.stringify(catArr))
+
+
+
+
+
+
+        })
+        localStorage.removeItem(localStorage.getItem("categoryId" + currentCategory))
+        let catel = document.getElementById('categoryId' + currentCategory)
+        catel.remove()
+        refreshTabs()
       });
 
 
-      // newDiv.append(catcloseButton)
+      newDiv.append(catclearButton)
       newDiv.appendChild(catdelButton);
       categoryDiv.appendChild(newDiv);
       let divDict = {};
