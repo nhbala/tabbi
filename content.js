@@ -154,57 +154,68 @@ function categoryCreator(newDiv, needRefresh){
         let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
         let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
         //moving new tab to correct category
-        if (curr_tabs.includes(dropzone.id.replace('drag', '')) == true){
-          dropzone = document.getElementById("categoryId" + i);
-          let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
-          currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
-          localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+        if (dropzone.id != draggableElement.id.replace('drag', '')){
+          if (curr_tabs.includes(dropzone.id.replace('drag', '')) == true){
+            dropzone = document.getElementById("categoryId" + i);
+            let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
+            currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
+            localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+            }
+          //moving new tab out of old category if needed
+          if (curr_tabs.includes(draggableElement.id.replace('drag', '')) == true){
+            const index = curr_tabs.indexOf(draggableElement.id.replace('drag', ''));
+            if (index > -1){
+              curr_tabs.splice(index,1);
+              curr_categoryDict['tab_ids'] = curr_tabs;
+              localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+            }
           }
-        //moving new tab out of old category if needed
-        if (curr_tabs.includes(draggableElement.id.replace('drag', '')) == true){
-          const index = curr_tabs.indexOf(draggableElement.id.replace('drag', ''));
-          if (index > -1){
-            curr_tabs.splice(index,1);
-            curr_categoryDict['tab_ids'] = curr_tabs;
-            localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
-          }
+          console.log("here?")
+          dropzone.appendChild(draggableElement);
         }
+
 
         }
 
     }else{
       let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
-      currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
-      let currElement = document.getElementById("li" + draggableElement.id.replace('drag', ''));
-      //check if element is in list or in another category change to helper funciton we already have something like this?
-      if (currElement == null){
-        let currNumberDivs = localStorage.getItem("categoryNum");
-        chrome.windows.getAll({populate:true},function(windows){
-        windows.forEach(function(window){
-          window.tabs.forEach(function(tab){
-            for (i = 1; i <= currNumberDivs; i++){
-              let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
-              let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
-              if (curr_tabs.includes(draggableElement.id.replace('drag', '')) == true){
-                const index = curr_tabs.indexOf(draggableElement.id.replace('drag', ''));
-                if (index > -1){
-                  curr_tabs.splice(index,1);
-                  curr_categoryDict['tab_ids'] = curr_tabs;
-                  localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
-                  localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+      console.log(draggableElement)
+      console.log(currCategorydict['tab_ids'])
+      let currBool = (currCategorydict['tab_ids'].includes(draggableElement.id.replace('drag', '')))
+      if (currBool == false){
+        currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
+        let currElement = document.getElementById("li" + draggableElement.id.replace('drag', ''));
+        //check if element is in list or in another category change to helper funciton we already have something like this?
+        if (currElement == null){
+          let currNumberDivs = localStorage.getItem("categoryNum");
+          chrome.windows.getAll({populate:true},function(windows){
+          windows.forEach(function(window){
+            window.tabs.forEach(function(tab){
+              for (i = 1; i <= currNumberDivs; i++){
+                let curr_categoryDict = JSON.parse(localStorage.getItem("categoryId" + i));
+                let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + i))["tab_ids"];
+                if (curr_tabs.includes(draggableElement.id.replace('drag', '')) == true){
+                  const index = curr_tabs.indexOf(draggableElement.id.replace('drag', ''));
+                  if (index > -1){
+                    curr_tabs.splice(index,1);
+                    curr_categoryDict['tab_ids'] = curr_tabs;
+                    localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
+                    localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+                  }
                 }
               }
-            }
+            });
           });
         });
-      });
-      }else{
-        currElement.remove();
-        localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+        }else{
+          currElement.remove();
+          localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
+        }
+        console.log("here?1")
+        dropzone.appendChild(draggableElement);
       }
     }
 
-    dropzone.appendChild(draggableElement);
 
     event
       .dataTransfer
