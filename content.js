@@ -37,13 +37,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let categoryTitle = currDict["name"];
         let categoryDiv = document.getElementById("categoryList");
         let newDiv = document.createElement("div");
-        categoryCreator(newDiv);
+        categoryCreator(newDiv, false);
         newDiv.textContent = categoryTitle;
         newDiv.setAttribute("id", "categoryId" + i);
         categoryDiv.appendChild(newDiv);
         //add back the moved tabs under their respective categories here
         let current_tabs = currDict["tab_ids"]
-        console.log(current_tabs);
         current_tabs.forEach(function(item){
           chrome.tabs.get(parseInt(item, 10), function(tab){
             let currTabId = tab.id
@@ -87,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
       let categoryTitle = document.getElementById("newCategoryText").value;
       let categoryDiv = document.getElementById("categoryList");
       let newDiv = document.createElement("div");
-      categoryCreator(newDiv);
+      categoryCreator(newDiv, true);
       newDiv.textContent = categoryTitle;
       newDiv.setAttribute("id", "categoryId" + localStorage.getItem("categoryNum").toString());
       categoryDiv.appendChild(newDiv);
@@ -125,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-function categoryCreator(newDiv){
+function categoryCreator(newDiv, needRefresh){
   newDiv.addEventListener("dragover", function(event){
     event
       .dataTransfer
@@ -150,7 +149,6 @@ function categoryCreator(newDiv){
     if (dropzone.id.includes("category") != true){
       console.log("should move the thing its over over some")
     }else{
-      console.log(dropzone.id);
       let currCategorydict = JSON.parse(localStorage.getItem(dropzone.id));
       currCategorydict['tab_ids'].push(draggableElement.id.replace('drag', ''));
       let currElement = document.getElementById("li" + draggableElement.id.replace('drag', ''));
@@ -171,8 +169,6 @@ function categoryCreator(newDiv){
                   localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
                   localStorage.setItem(dropzone.id, JSON.stringify(currCategorydict));
                 }
-
-                break
               }
             }
           });
@@ -190,7 +186,11 @@ function categoryCreator(newDiv){
     event
       .dataTransfer
       .clearData();
+    refreshTabs()
   })
+  if (needRefresh == true){
+    refreshTabs()
+  }
 }
 
 // When a tab is closed/window is closed
@@ -211,7 +211,8 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
             }
             curr_categoryDict['tab_ids'] = curr_tabs;
             localStorage.setItem("categoryId" + i, JSON.stringify(curr_categoryDict));
-            break
+            var currDrag = document.getElementById("drag" + tabId)
+            currDrag.remove();
           }
         }
       });
@@ -220,6 +221,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
   }else{
     currElement.remove();
   }
+  refreshTabs();
 });
 
 //Clears all categories currently
@@ -228,7 +230,27 @@ clearButton.addEventListener('click', function(){
   localStorage.clear();
   var node= document.getElementById("categoryList");
   node.querySelectorAll('*').forEach(n => n.remove());
+  // refreshTabs();
 });
+
+
+//refresh tab functions
+function refreshTabs(){
+  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+    let curr_tab = tabs[0]
+    chrome.windows.getAll({populate:true},function(windows){
+      windows.forEach(function(window){
+        window.tabs.forEach(function(tab){
+          console.log(tab.url)
+              if (tab.id != curr_tab.id && tab.url == "chrome://newtab/"){
+                console.log("reloading this tab!" + tab.id)
+                chrome.tabs.reload(tab.id);
+              }
+          });
+        });
+      });
+  });
+}
 
 //create tabbuttons
 function tabButtonCreator(tab, currElement){
@@ -258,15 +280,13 @@ function tabButtonCreator(tab, currElement){
 
 //When tabs are added/updated/reloaded
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
-  if (changeInfo.status == 'complete') {
     //Checking all the current tabs open
-    console.log("somethign Changed");
     chrome.windows.getAll({populate:true},function(windows){
   windows.forEach(function(window){
     window.tabs.forEach(function(tab){
       var currElement = document.getElementById(tab.id)
-      console.log(currElement)
       if (currElement == null){
+        console.log("lets see")
         let currNumberDivs = localStorage.getItem("categoryNum");
         if (currNumberDivs != null){
           let existsFlag = false;
@@ -282,10 +302,14 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
           }
         }
       }else{
+        console.log("hm")
         currElement.textContent = tab.title
       }
     });
   });
   });
-  }
+  console.log("right before added refresh")
+  console.log(changeInfo.url)
+  //freshing in an infinite loop need to fix this
+  // refreshTabs();
 });
