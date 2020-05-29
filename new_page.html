@@ -2,16 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>Tabbi</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+  <link rel="stylesheet" href="stylesheet.css">
+<style>
+body {
+    font-family: 'Roboto';
+}
+</style>
 </head>
 <body>
 
-  <div id="tablist">
-  <h1>These are your current tabs</h1>
-    <input type="text" id="searchBar"  placeholder="Search for tabs.." title="Type in a name">
+<div class="tabContainer">
+  <div class="tab_list" id="tablist" style="float:left; margin-right:80px;">
+  <h1 style="margin-left:40px;">Open Tabs</h1>
+    <input style="margin-left:40px;" type="text" id="searchBar"  placeholder="Search for tabs.." title="Type in a name">
     <ul id="myUL">
     </ul>
   </div>
+</div>
+
 
   <div>
     <h1>Input new Categories</h2>

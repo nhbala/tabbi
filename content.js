@@ -130,8 +130,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // var li = document.createElement("li");
             var a = document.createElement("button");
             var d = document.createElement("button");
+
+            favimage = document.createElement("img")
+            favimage.setAttribute("src", tab.favIconUrl)
+            favimage.setAttribute("class", "tabFavs")
+            console.log(favimage)
+
             a.textContent = tab.title;
             a.setAttribute("id", tab.id);
+            a.setAttribute("class", "tabButton")
             a.addEventListener('click', function(){
               chrome.windows.update(tab.windowId, {focused: true});
               chrome.tabs.update(tab.id, {selected: true});
@@ -145,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             //creating delete tab button!
             d.textContent = "close!";
+            d.setAttribute("class", "closeTab");
             d.setAttribute("id", "close" + tab.id);
             d.addEventListener('click', function(){
               let tabId = tab.id
@@ -180,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             dragSpan.setAttribute("id", "drag" + tab.id);
             dragSpan.setAttribute("draggable", "true");
+            dragSpan.appendChild(favimage)
             dragSpan.appendChild(a);
             dragSpan.appendChild(d);
             newDiv.appendChild(dragSpan);
@@ -510,8 +519,18 @@ function tabButtonCreator(tab, currElement){
   var a = document.createElement("button");
   var d = document.createElement("button");
   //creating tab button
+
   a.textContent = tab.title;
   a.setAttribute("id", tab.id);
+  a.setAttribute("class", "tabButton")
+
+
+  favimage = document.createElement("img")
+  favimage.setAttribute("src", tab.favIconUrl)
+  favimage.setAttribute("class", "tabFavs")
+  console.log(favimage)
+
+
   a.addEventListener('click', function(){
     chrome.windows.update(tab.windowId, {focused: true});
     chrome.tabs.update(tab.id, {selected: true});
@@ -519,6 +538,7 @@ function tabButtonCreator(tab, currElement){
 
   //creating delete tab button!
   d.textContent = "close!";
+  d.setAttribute("class", "closeTab");
   d.setAttribute("id", "close" + tab.id);
   d.addEventListener('click', function(){
     let tabId = tab.id
@@ -560,6 +580,8 @@ function tabButtonCreator(tab, currElement){
   })
   dragSpan.setAttribute("id", "drag" + tab.id);
   dragSpan.setAttribute("draggable", "true");
+  // a.append(favimage)
+  dragSpan.appendChild(favimage)
   dragSpan.appendChild(a)
   dragSpan.appendChild(d)
   li.appendChild(dragSpan);
@@ -588,10 +610,20 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
             }
           }
           if (existsFlag == false){
+            console.log("i hate css")
             tabButtonCreator(tab, currElement);
           }
+          console.log("i hate javascript")
+
         }
       }else{
+        console.log("hi")
+        currDrag = document.getElementById("drag" + tab.id);
+        console.log(currDrag.querySelector('.tabFavs').src)
+        if (currDrag.querySelector('.tabFavs').src != tab.favIconUrl){
+          console.log("Lmaasiojfaosigjsa")
+          currDrag.querySelector('.tabFavs').src = tab.favIconUrl;
+        }
         currElement.textContent = tab.title
       }
     });

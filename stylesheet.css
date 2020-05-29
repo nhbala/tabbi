@@ -1,0 +1,46 @@
+.tabButton {
+  width: 100%;
+  max-width: 290px;
+	border-radius:5px;
+  margin-top:10px;
+	font-size:9px;
+	font-weight:bold;
+	padding:9px 23px;
+
+}
+.myButton:hover {
+
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+ul{
+  list-style-type: none;
+}
+
+.closeTab {
+
+}
+.closeTab:hover {
+
+}
+
+
+
+
+
+
+.tab_list{
+  /* border: 1px solid red;
+  height: 650px;
+  overflow:scroll;
+  background:#fff; */
+}
+
+/* .tabContainer{
+  height: 50px;
+
+
+} */
