@@ -610,16 +610,14 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
             }
           }
           if (existsFlag == false){
-            console.log("i hate css")
+
             tabButtonCreator(tab, currElement);
           }
-          console.log("i hate javascript")
+
 
         }
       }else{
-        console.log("hi")
         currDrag = document.getElementById("drag" + tab.id);
-        console.log(currDrag.querySelector('.tabFavs').src)
         if (currDrag.querySelector('.tabFavs').src != tab.favIconUrl){
           console.log("Lmaasiojfaosigjsa")
           currDrag.querySelector('.tabFavs').src = tab.favIconUrl;

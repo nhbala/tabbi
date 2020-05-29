@@ -27,9 +27,31 @@ ul{
 
 }
 
+.tabContainer{
+  display:block;
+  position:absolute;
+  top:30px;
+  left:0;
+  width:30%;
+  height: calc(100% - 30px);
+  overflow-y: auto;
+  /* background-color:rgb(127,255,127); */
+}
+
+.categoryContainer{
+  /* display:flex;
+  flex-wrap: wrap;
+  justify-content:flex-start;
+  flex: 1 0 80%; */
+  margin-left:35%;
+  /* background-color:rgb(255,255,0); */
+}
 
 
-
+.tabFavs{
+  width:  25px;
+  height: 25px;
+}
 
 
 .tab_list{
