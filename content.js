@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
             favimage = document.createElement("img")
             favimage.setAttribute("src", tab.favIconUrl)
             favimage.setAttribute("class", "tabFavs")
-            console.log(favimage)
+            console.log(favimage.toString())
 
             a.textContent = tab.title;
             a.setAttribute("id", tab.id);
@@ -619,7 +619,7 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
       }else{
         currDrag = document.getElementById("drag" + tab.id);
         if (currDrag.querySelector('.tabFavs').src != tab.favIconUrl){
-          console.log("Lmaasiojfaosigjsa")
+
           currDrag.querySelector('.tabFavs').src = tab.favIconUrl;
         }
         currElement.textContent = tab.title
