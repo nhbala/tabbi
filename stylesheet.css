@@ -4,7 +4,8 @@
 .tabButton {
   width: 100%;
   max-width: 290px;
-  max-height: 20px;
+  max-height: 22px;
+  margin-top: 3px;
   white-space: nowrap;
 	background-color:#c4c4c4;
 	border-radius:50px;
@@ -13,7 +14,7 @@
 	cursor:pointer;
 	color:#030303;
 	font-family:Arial;
-	font-size:8px;
+	font-size:9.5px;
 	padding:7px 25px;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -46,16 +47,19 @@ ul{
 }
 
 .categoryContainer{
-  margin-left:35%;
+  margin-left:32%;
 }
 
 
 .tabFavs{
-  width:  25px;
-  height: 25px;
+  width:  15px;
+  height: 15px;
 }
 
 
+.closeTab{
+  /* float: right; */
+}
 
 
 

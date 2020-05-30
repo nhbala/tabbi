@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
             favimage = document.createElement("img")
             favimage.setAttribute("src", tab.favIconUrl)
             favimage.setAttribute("class", "tabFavs")
-            console.log(favimage.toString())
+
 
             a.textContent = tab.title;
             a.setAttribute("id", tab.id);
