@@ -33,11 +33,13 @@ body {
 
   <div class="categoryContainer">
     <h1>Input new Categories</h2>
-      <input type="text" id="newCategoryText" placeholder="Input new Categories..">
+      <input type="text" id="newCategoryText" class="inputCategory" placeholder="Input new Categories..">
       <button id="createButton">Create!</button>
       <button id="clearButton">Clear!</button>
     <h2>These are your current cateogories</h2>
-    <input type="text" id="searchCategories"  placeholder="Search for categories.." title="Type in a name">
+    <div class="search__container">
+      <input class="search__input" type="text" id="searchCategories"  placeholder="Search for categories.." title="Type in a name">
+    </div>
     <div id="categoryList">
     </div>
   </div>

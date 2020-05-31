@@ -57,9 +57,121 @@ ul{
 }
 
 
-.closeTab{
-  /* float: right; */
+
+
+
+.closeTab {
+  background: none;
+  border: 0;
+  box-sizing: border-box;
+
 }
+
+.categoryListing  {
+  margin-top: 10px;
+  border-radius: 50px;
+  border: 2px solid black;
+  padding: 20px;
+  width: 800px;
+  height: 150px;
+}
+
+
+.inputCategory{
+    width:40%;
+    border:2px solid #aaa;
+    border-radius:4px;
+    margin:8px 0;
+    outline:none;
+    padding:8px;
+    box-sizing:border-box;
+    transition:.3s;
+  }
+
+  .inputCategory:focus{
+    border-color:dodgerBlue;
+    box-shadow:0 0 8px 0 dodgerBlue;
+  }
+
+
+
+
+
+  .closeCategory {
+    margin-left: 5px;
+	background-color:#ffffff;
+	-webkit-border-top-left-radius:28px;
+	-moz-border-radius-topleft:28px;
+	border-top-left-radius:28px;
+	-webkit-border-top-right-radius:28px;
+	-moz-border-radius-topright:28px;
+	border-top-right-radius:28px;
+	-webkit-border-bottom-right-radius:28px;
+	-moz-border-radius-bottomright:28px;
+	border-bottom-right-radius:28px;
+	-webkit-border-bottom-left-radius:28px;
+	-moz-border-radius-bottomleft:28px;
+	border-bottom-left-radius:28px;
+text-indent:0;
+	border:1px solid #c7c7c7;
+	display:inline-block;
+	color:#6e6e6e;
+	font-family:arial;
+	font-size:13px;
+	font-weight:bold;
+	font-style:normal;
+height:20px;
+	line-height:20px;
+width:80px;
+	text-decoration:none;
+	text-align:center;
+}.closeCategory:hover {
+	background-color:#dbd7db;
+}.closeCategory:active {
+	position:relative;
+	top:1px;
+}
+
+
+.clearCategory {
+  margin-left: 5px;
+	background-color:#ffffff;
+	-webkit-border-top-left-radius:28px;
+	-moz-border-radius-topleft:28px;
+	border-top-left-radius:28px;
+	-webkit-border-top-right-radius:28px;
+	-moz-border-radius-topright:28px;
+	border-top-right-radius:28px;
+	-webkit-border-bottom-right-radius:28px;
+	-moz-border-radius-bottomright:28px;
+	border-bottom-right-radius:28px;
+	-webkit-border-bottom-left-radius:28px;
+	-moz-border-radius-bottomleft:28px;
+	border-bottom-left-radius:28px;
+text-indent:0;
+	border:1px solid #ff0000;
+	display:inline-block;
+	color:#ff0000;
+	font-family:arial;
+	font-size:13px;
+	font-weight:bold;
+	font-style:normal;
+height:20px;
+	line-height:20px;
+width:80px;
+	text-decoration:none;
+	text-align:center;
+}.clearCategory:hover {
+	background-color:#dbd7db;
+}.clearCategory:active {
+	position:relative;
+	top:1px;
+}
+
+
+
+
+
 
 
 

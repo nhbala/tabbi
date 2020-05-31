@@ -49,11 +49,13 @@ document.addEventListener('DOMContentLoaded', function() {
         categoryCreator(newDiv, false);
         newDiv.textContent = categoryTitle;
         newDiv.setAttribute("id", "categoryId" + i);
+        newDiv.setAttribute("class", "categoryListing")
 
         //delete tabs from category (more like a "clear button")
         let catdelButton = document.createElement("button");
-        catdelButton.textContent = "close!";
+        catdelButton.textContent = "clear";
         catdelButton.setAttribute("id", "deletecategoryId" + i);
+        catdelButton.setAttribute("class", "closeCategory");
         catdelButton.addEventListener('click', function(){
           let currentCategory = catdelButton.id.replace('deletecategoryId', '')
           let curr_tabs = JSON.parse(localStorage.getItem("categoryId" + currentCategory))['tab_ids'];
@@ -80,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let catclearButton = document.createElement("button");
         catclearButton.textContent = "delete!";
         catclearButton.setAttribute("id", "clearcategoryId" + categoryTitle);
+        catclearButton.setAttribute("class", "clearCategory");
         catclearButton.addEventListener('click', function(){
           console.log("HELLLO")
           let currentCategory = catclearButton.id.replace('clearcategoryId', '')
@@ -151,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
 
             //creating delete tab button!
-            d.textContent = "close!";
+            d.textContent = "x";
             d.setAttribute("class", "closeTab");
             d.setAttribute("id", "close" + tab.id);
             d.addEventListener('click', function(){
@@ -228,12 +231,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
       newDiv.textContent = categoryTitle;
       newDiv.setAttribute("id", "categoryId" + categoryTitle);
+      newDiv.setAttribute("class", "categoryListing")
 
 
       //adding delete tabs from category button
       var catdelButton = document.createElement("button");
-      catdelButton.textContent = "close!";
+      catdelButton.textContent = "clear";
       catdelButton.setAttribute("id", "deletecategoryId" + categoryTitle);
+      catdelButton.setAttribute("class", "closeCategory");
       catdelButton.addEventListener('click', function(){
         console.log("hello1")
         let currentCategory = catdelButton.id.replace('deletecategoryId', '')
@@ -261,6 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
       let catclearButton = document.createElement("button");
       catclearButton.textContent = "delete!";
       catclearButton.setAttribute("id", "clearcategoryId" + categoryTitle);
+      catclearButton.setAttribute("class", "clearCategory");
       catclearButton.addEventListener('click', function(){
         console.log("HELLLO")
         let currentCategory = catclearButton.id.replace('clearcategoryId', '')
@@ -537,7 +543,7 @@ function tabButtonCreator(tab, currElement){
   })
 
   //creating delete tab button!
-  d.textContent = "close!";
+  d.textContent = "x";
   d.setAttribute("class", "closeTab");
   d.setAttribute("id", "close" + tab.id);
   d.addEventListener('click', function(){
